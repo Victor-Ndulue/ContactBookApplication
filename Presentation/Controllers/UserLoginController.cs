@@ -1,8 +1,10 @@
-﻿namespace Presentation.Controllers
+﻿using Service.Contracts.IEntityServices;
+
+namespace Presentation.Controllers
 {
     public class UserLoginController : BaseController
     {
-        private readonly IUserLoginRepository _userLoginRepository;
+        private readonly IUserLoginService _userLoginService;
         public UserLoginController()
         {
         }
