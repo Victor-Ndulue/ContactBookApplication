@@ -1,4 +1,5 @@
 ﻿using Contracts;
+using Contracts.IEntityQueryRepository;
 
 namespace RepositoryUnitOfWork.Contract
 {
@@ -6,7 +7,9 @@ namespace RepositoryUnitOfWork.Contract
     {
         IPhotoRepository PhotoRepository{get;}
         IContactRepository ContactRepository { get;}
+        IContactQueryRepository ContactQueryRepository { get;}
         IUserRepository UserRepository { get;}
+        IUserQueryRepository UserQueryRepository { get;}
 
         Task SaveAsync();
     }
