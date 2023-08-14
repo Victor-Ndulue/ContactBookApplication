@@ -14,5 +14,9 @@ namespace Shared.DTOs
 
         [Phone(ErrorMessage = "Invalid phone number format.")]
         public string PhoneNumber { get; set; }
+
+        [Required(ErrorMessage = "The password field is required.")]
+        [StringLength(15, MinimumLength = 5, ErrorMessage = "The password field must be between 5 and 15 characters.")]
+        public string Password { get; set; }
     }
 }
