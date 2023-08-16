@@ -2,7 +2,7 @@
 
 namespace Presentation.Controllers
 {
-    [Route("api/[Contoller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class BaseController : ControllerBase
     {

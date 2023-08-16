@@ -18,7 +18,7 @@ namespace Repositories.EntityQueryRepositories
 
         public async Task<User> GetUserByEmailAsync(string emailAddress, bool trackChanges)
         {
-            return await GetByCondition(u=>u.Email==emailAddress, trackChanges).SingleOrDefaultAsync();
+            return await GetByCondition(u=>u.Email==emailAddress, trackChanges).Include(u=>u.Contacts).SingleOrDefaultAsync();
         }
 
         public async Task<User> GetUserByIdAsync(int id, bool trackChanges)
