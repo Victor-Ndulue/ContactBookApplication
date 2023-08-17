@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.IEntityServices;
 using Shared.DTOs.ContactDTOs;
 using Shared.PaginationDefiners;
+using System.Security.Claims;
 
 namespace Presentation.Controllers
 {
@@ -19,9 +20,13 @@ namespace Presentation.Controllers
         [Route("add")]
         public async Task<IActionResult> AddContactAsync([FromForm] ContactDtoForCreation contactDto)
         {
-            var userEmail = User.GetUserEmail();
-            var result = await _contactServices.AddContactAsync(userEmail, contactDto);
-            return Ok(result);
+            try
+            {
+                var userName = User.GetUsername();
+                var result = await _contactServices.AddContactAsync(userName, contactDto);
+                return Ok(result);
+            }
+            catch (Exception ex) { return Ok(ex.ToString()); }
         }
 
         [HttpPut]
@@ -36,7 +41,7 @@ namespace Presentation.Controllers
         [Route("delete")]
         public async Task<IActionResult> DeleteContact(string contactNameToDelete)
         {
-            var user = User.GetUserEmail();
+            var user = User.GetUsername();
             var result = await _contactServices.DeleteContact(user, contactNameToDelete);
             return Ok(result);
         }

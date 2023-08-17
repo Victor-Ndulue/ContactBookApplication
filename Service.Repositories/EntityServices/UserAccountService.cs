@@ -59,6 +59,7 @@ namespace Service.Repositories.EntityServices
             if (signInResult.Succeeded)
             {
                 var userClaims = await _user.GetClaimsAsync(user);
+                userClaims.Add(new Claim(ClaimTypes.Email, user.Email));
 
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var key = Encoding.ASCII.GetBytes(_configuration["TokenKey"]);

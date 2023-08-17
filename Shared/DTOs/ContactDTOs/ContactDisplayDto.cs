@@ -2,9 +2,9 @@
 {
     public class ContactDisplayDto
     {
-        public string ContactName { get; }
-        public string ContactPhoneNumber { get; }
-        public string ContactEmail { get; }
-        public string PhotoUrl { get; }
+        public string ContactName { get; set; }
+        public string ContactPhoneNumber { get; set; }
+        public string ContactEmail { get; set; }
+        public string PhotoUrl { get; set; }
     }
 }

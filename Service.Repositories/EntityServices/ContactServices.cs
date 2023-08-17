@@ -3,6 +3,7 @@ using AutoMapper.QueryableExtensions;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Models.Entities;
 using RepositoryUnitOfWork.Contract;
 using Service.Contracts.IEntityServices;
@@ -31,6 +32,7 @@ namespace Service.Repositories.EntityServices
             if (dtoForCreation == null) return StandardResponse<ContactDisplayDto>.Failed("input field cannot be null");
             var contact = _mapper.Map<Contact>(dtoForCreation);
             await _unitOfWork.ContactRepository.CreateAsync(contact);
+            await _unitOfWork.SaveAsync();
             user.Contacts.Add(contact);
             _unitOfWork.UserRepository.Update(user);
             await _unitOfWork.SaveAsync();
@@ -87,9 +89,10 @@ namespace Service.Repositories.EntityServices
             return StandardResponse<ContactDisplayDto>.Success("Contact updated successfully", response, 201);
         }
 
-        public async Task<StandardResponse<string>> DeleteContact (string email, string contactName)
+        public async Task<StandardResponse<string>> DeleteContact (string userName, string contactName)
         {
-            var user = await _unitOfWork.UserQueryRepository.GetUserByEmailAsync(email, false);
+            var users =  _unitOfWork.UserQueryRepository.GetAllUsers(false);
+            var user = await users.SingleOrDefaultAsync(u => u.UserName == userName);
             var contact = user.Contacts.SingleOrDefault(t=>t.ContactName == contactName);
             if (contact == null) return StandardResponse<string>.Failed("contact name does not exist");
             if (contact.Photos.Count > 0)
