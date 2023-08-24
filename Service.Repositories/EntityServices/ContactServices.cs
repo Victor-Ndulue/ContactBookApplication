@@ -44,29 +44,8 @@ namespace Service.Repositories.EntityServices
         {
             if (contactNameToUpdate ==null || dtoForUpdate == null) return StandardResponse<ContactDisplayDto>.Failed("input fields cannot be empty");
             var contact = await _unitOfWork.ContactQueryRepository.GetContactByContactNameAsync(contactNameToUpdate, false);
-            var uploadResult = new ImageUploadResult();
 
-            var formFile = dtoForUpdate.PhotoFile;
-            if (formFile.Length > 0)
-            {
-                using var stream = formFile.OpenReadStream();
-                var uploadParams = new ImageUploadParams
-                {
-                    File = new FileDescription(formFile.FileName, stream),
-                    Transformation = new Transformation().Height(500).Width(500).Crop("fill").Gravity("face"),
-                    Folder = "da-net7"
-                };
-                uploadResult = await _cloudinary.UploadAsync(uploadParams);
-            }
-            var result = uploadResult;
-
-            if (result.Error != null) return StandardResponse<ContactDisplayDto>.Failed($"An error occured while trying to upload image. {result.Error.Message}. Please, retry." );
-            var photo = new Photo
-            {
-                Url = result.SecureUrl.AbsoluteUri,
-                PublicId = result.PublicId,
-            };
-
+           
             //if (contact.Photos.Count > 0 ) 
             //{
             //    var photos = contact.Photos;
@@ -82,11 +61,43 @@ namespace Service.Repositories.EntityServices
             //}
 
             var updatedContact = _mapper.Map(dtoForUpdate, contact);
-            updatedContact.Photos.Add(photo);
             _unitOfWork.ContactRepository.Update(updatedContact);
             await _unitOfWork.SaveAsync();
             var response = _mapper.Map<ContactDisplayDto>(updatedContact);
             return StandardResponse<ContactDisplayDto>.Success("Contact updated successfully", response, 201);
+        }
+
+        public async Task<String> AddContactPhoto(IFormFile PhotoFile, string contactNameToUpdate)
+        {
+            var contact = await _unitOfWork.ContactQueryRepository.GetContactByContactNameAsync(contactNameToUpdate, false);
+            var uploadResult = new ImageUploadResult();
+
+            var formFile = PhotoFile;
+            if (formFile.Length > 0)
+            {
+                using var stream = formFile.OpenReadStream();
+                var uploadParams = new ImageUploadParams
+                {
+                    File = new FileDescription(formFile.FileName, stream),
+                    Transformation = new Transformation().Height(500).Width(500).Crop("fill").Gravity("face"),
+                    Folder = "da-net7"
+                };
+                uploadResult = await _cloudinary.UploadAsync(uploadParams);
+            }
+            var result = uploadResult;
+
+            if (result.Error != null) return null;
+            {
+                var photo = new Photo
+                {
+                    Url = result.SecureUrl.AbsoluteUri,
+                    PublicId = result.PublicId,
+                };
+                contact.Photos.Add(photo);
+                _unitOfWork.ContactRepository.Update(contact);
+                await _unitOfWork.SaveAsync();
+            }
+            return "update successful";
         }
 
         public async Task<StandardResponse<string>> DeleteContact (string userName, string contactName)

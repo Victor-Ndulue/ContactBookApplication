@@ -66,7 +66,7 @@ namespace Service.Repositories.EntityServices
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(userClaims),
-                    Expires = DateTime.UtcNow.AddDays(7),
+                    Expires = DateTime.UtcNow.AddDays(1),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
                 };
                 var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -86,29 +86,3 @@ namespace Service.Repositories.EntityServices
 
 
 
-/*
- *         var signInResult = await _signInManager.PasswordSignInAsync(user.Email, userDtoForLogin.Password, isPersistent: false, lockoutOnFailure: false);
-        if (signInResult.Succeeded)
-        {
-            var userClaims = await _userManager.GetClaimsAsync(user);
-            
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration["TokenKey"]);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(userClaims),
-                Expires = DateTime.UtcNow.AddDays(7), // Token expiration time
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = tokenHandler.WriteToken(token);
-
-            // Create the LoginResponse object with the generated token
-            LoginResponse loginResponse = new LoginResponse();
-            loginResponse.UserName = user.UserName;
-            loginResponse.Token = tokenString;
-
-            return StandardResponse<LoginResponse>.Success($"welcome {user.UserName}", loginResponse, 200);
-        }
-
-*/

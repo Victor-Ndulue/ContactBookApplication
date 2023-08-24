@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.IEntityServices;
 using Shared.DTOs.ContactDTOs;
@@ -30,10 +31,19 @@ namespace Presentation.Controllers
         }
 
         [HttpPut]
-        [Route("update")]
-        public async Task<IActionResult> UpdateContact([FromForm] string oldContactName, ContactDtoForUpdate contactDto)
+        [Route("update/{oldContactName}")]
+        public async Task<IActionResult> UpdateContact(string oldContactName, ContactDtoForUpdate contactDto )
         {
             var result = await _contactServices.UpdateContactAsync(oldContactName, contactDto);
+            return Ok(result);
+        }
+
+
+        [HttpPut]
+        [Route("addcontactphoto/{oldContactName}")]
+        public async Task<IActionResult> AddContactPhoto(IFormFile PhotoFile, string oldContactName)
+        {
+            var result = await _contactServices.AddContactPhoto(PhotoFile, oldContactName);
             return Ok(result);
         }
 
@@ -55,7 +65,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
-        [Route("contact/filter/{keyword}")]
+        [Route("getcontactbykeyword/filter/{keyword}")]
         public async Task<IActionResult> GetContactByKeyword([FromQuery] string keyword, PaginationParams paginationParams, bool trackChanges)
         {
             var result = await _contactServices.GetContactsByKeyWord(keyword, paginationParams, trackChanges);
